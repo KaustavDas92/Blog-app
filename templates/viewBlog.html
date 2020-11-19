@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="topnav">
+    {% if session['user']['role']=='author' %}
+    <a class="active" href="/blog/create">Add Blog</a>
+    {% endif %}
+    <a href="/dashboard" style="float: left; color: rgb(218, 21, 21);"><b>Dashboard</b></a>
+    <a href="/user/signout" style="color: rgb(218, 21, 21);">Signout</a>
+    
+  </div>
+    <div class="card" style="width: 80%; margin-left: 5%; margin-top: 5%;">
+
+        <div class="container" style="margin-left: 3%;">
+            <h1>{{Blog['title']}}</h1>
+            <div style="display: flex; top: -20px;">
+               <span style="font-size: medium; padding-right: 5%;"> 
+                    <span style="color:grey; ">Author: </span> 
+                 {{Blog['author']}} 
+                 </span>
+                
+               <span style="font-size: small;"> 
+                <span style="color:grey; ">Created At: </span>
+                {{Blog['created_at']}}
+            </span>
+            </div>
+            <p>{{Blog['body']}}</p>
+        </div>
+    </div>
+
+    <div class="container" style="width: 80%; margin-left: 5%; margin-top: 5%;">
+        <input type="hidden" id="blogId" value="{{Blog['_id']}}">
+        <i><span>Leave a Comment</span></i>
+        <br> <br>
+        <div id="commentSection" >
+        </div>
+        <textarea id="comment" cols="80" rows="2" placeholder="Please leave a comment"></textarea>
+        
+        <button type="submit" name="comment_form" id="comment_form" value="{{session['user']['_id']}}" class="btn" style="top: -15px;background-color: chartreuse;" onclick="submitComment(this.value)">Comment</button>
+            
+    </div>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+    <script>
+
+    function getComments(){
+
+        var sessionUser="{{ session['user']['_id'] }}"
+        var blogId=document.getElementById('blogId').value;
+        var commentSection=document.getElementById('commentSection')
+        $.ajax({
+            url:'/blogs/comments?id='+blogId,
+            type:'GET',
+            dataType:"json",
+            contentType: 'application/json; charset=utf-8',
+            success: function(res){
+                var html=""
+                for(var i =0;i<res.length;i++){
+                    html+="<div style='display:flex; justify-content: space-between;'><strong>"+res[i]['commentedUsername']+"</strong>"
+                    if(sessionUser==res[i]['blogAuthorId'] ||  sessionUser == res[i]['commentedUserId']){
+                    html+="<button class='btn' value='"+res[i]['id']+"' onclick='deleteComment(this.value)' style='font-size:10px';>delete</button>"
+                    }
+                    html+="</div><div style='background-color: lightblue;'><p>"+res[i]['message']+"</p></div>"
+                }
+                commentSection.innerHTML=html;
+            },
+            error: function(res){
+                console.log('error')
+            }
+        })
+
+    }
+    function deleteComment(id){
+        $.ajax({
+            url:'/blogs/comments/delete?id='+id,
+            type:'DELETE',
+            dataType:"json",
+            contentType: 'application/json; charset=utf-8',
+            success:function(res){
+                getComments()
+            },
+            error: function(res){
+                console.log('error='+res)
+            }
+             
+        })
+    }
+    function submitComment(id)
+    {
+        var comment= document.getElementById('comment').value;
+        var blogId=document.getElementById('blogId').value;
+        
+        data={
+            'comment':comment,
+            'userId': id,
+            'blogId':blogId
+        }
+        $.ajax({
+            url:'/blogs/comment/create',
+            type:'POST',
+            data:JSON.stringify(data),
+            dataType:"json",
+            contentType: 'application/json; charset=utf-8',
+            success: function(res){
+                document.getElementById('comment').value=""
+                getComments()
+                // comments.push(res)
+                // console.log('res='+comments[0]['message'])
+            },
+            error: function(res){
+                console.log('error='+ res)
+            }
+        })
+    }
+    window.onload=getComments;
+</script>
+{% endblock %}

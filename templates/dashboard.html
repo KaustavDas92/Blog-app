@@ -1,0 +1,65 @@
+{% extends "base.html"%}
+
+{% block content%}
+<div class="topnav">
+    <a href="/dashboard" style="float: left; color: rgb(218, 21, 21);"><b>Dashboard</b></a>
+    {% if session['user']['role']=='author' %}
+    <a class="active" href="/blog/create">Add Blog</a>
+    {% endif %}
+    <a href="/user/signout" style="color: rgb(218, 21, 21);">Signout</a>
+  </div>
+<p style="margin-left: 2%;">Welcome, {{session['user'].name}}</p>
+{% for items in Blogs %}
+    <div class="container">
+        <div class="card">
+            {% if session['user']['name'] == items['author']  %}
+            <div style="display: inline-block , flex;">
+                <a href="/blogs/{{items['_id']}}/update">edit</a>
+                <a href="/blogs/{{items['_id']}}/delete">delete</a>
+            </div>
+            {% endif %}
+            <h3>Title</h3>
+            {{items['title']}}
+            <h3>Body</h3>
+           <p id="getBody"> {{items['body']}}</p>      
+            <h3>Author</h3>
+            {{items['author']}}
+            <br>
+            <h3 style="display: inline-block;">Created At: </h3>
+            {{items['created_at']}}
+
+            <!-- <button name="viewBlog" value="{{items['_id']}}" onclick="viewBlog(this.value);" class="btn">View Blog</button> -->
+           <a href="/blogs/view?id={{items['_id']}}"> <button class="btn">View Blog</button></a>
+        </div>
+    </div>
+{%endfor%}
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+    var paragraphs = document.getElementsByTagName("p");
+    for(var i = 1; i < paragraphs.length; i++)
+    {
+        var blogBody=paragraphs[i].innerHTML
+        var str2 = blogBody.replace(/(([^\s]+\s\s*){10})(.*)/,"$1…");
+        paragraphs[i].innerHTML=str2;
+    }
+</script>
+<!-- <script type="text/javascript">
+    $(function(){
+        $('#viewBlog').click(function(e){
+            e.preventDefault()
+            console.log
+        })
+    })
+</script> -->
+<!-- <script>
+    function viewBlog(id)
+    {
+        console.log('inside viewBlog='+id);
+        $.ajax({
+            url:
+        })
+    }
+
+</script> -->
+{% endblock %}

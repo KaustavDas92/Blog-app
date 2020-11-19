@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+{{session['user']}}
+<div class="card-wrapper">
+    <div class="card">
+        <h1 class="center"> Create a user</h1>
+        <form name="signup_form" id="signup_form"
+            action="/user/signup"
+            method="POST">
+            <!-- <form name="signup_form" id="signup_form"> -->
+
+            <label for="name">Name</label>
+            <input type="text" name="name" class="field" required>
+    
+            <label for="email">Email</label>
+            <input type="email" name="email" class="field" required>
+            
+            <label for="role">Role</label>
+            <select name="role" id="role">
+                <option value="author">Author</option>
+                <option value="reader" selected>Reader</option>
+            </select>
+            <br><br>
+            <label for="password">Password</label>
+            <input type="password" name="password" class="field" required>
+    
+            <p class="error error--hidden"></p>
+    
+            <input type="submit" value="Sign UPPP" class="btn">
+          
+          </form>
+    </div>
+
+    <div class="">
+        <p>OR</p>
+    </div>
+    <div class="card">
+        <h1 class="center"> Login</h1>
+        <form name="login_form" id="login_form"
+            action="/user/login"
+            method="POST">
+    
+            <label for="email">Email</label>
+            <input type="email" name="email" class="field" required>
+    
+            <label for="password">Password</label>
+            <input type="password" name="password" class="field" required>
+    
+            <p class="error error--hidden"></p>
+    
+            <input type="submit" value="Login" class="btn">
+          
+          </form>
+    </div>
+
+</div>
+
+{% endblock %}
+
+<!-- <script>
+
+$(function(){
+
+    $('#signup_form').submit( function(e) {
+        console.log('button clicked');
+        e.preventDefault();
+    });
+});
+
+</script> -->
